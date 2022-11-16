@@ -1,0 +1,75 @@
+version: '3'
+networks:
+  kafka-net:
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_CLIENT_USER=zoo
+      - ZOO_CLIENT_PASSWORD=wGcFKJsRcwYJeRXj
+    ports:
+      - '2181:2181'
+      - '2182:8080'
+    networks:
+      - kafka-net
+
+  kafka1:
+    image: bitnami/kafka:latest
+    restart: always
+    ports:
+      - '29092:29092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_USER=zoo
+      - KAFKA_ZOOKEEPER_PASSWORD=wGcFKJsRcwYJeRXj
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+#      - KAFKA_CFG_LISTENERS=PLAINTEXT://127.0.0.1:9092
+#      - KAFKA_CFG_LISTENERS=PLAINTEXT:kafka1//:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka1:9092,EXTERNAL://localhost:29092
+    networks:
+      - kafka-net
+
+  kafka2:
+    image: bitnami/kafka:latest
+    restart: always
+    ports:
+      - '29093:29093'
+    environment:
+      - KAFKA_BROKER_ID=2
+      - KAFKA_ZOOKEEPER_USER=zoo
+      - KAFKA_ZOOKEEPER_PASSWORD=wGcFKJsRcwYJeRXj
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+#      - KAFKA_CFG_LISTENERS=PLAINTEXT://127.0.0.1:9093
+#      - KAFKA_CFG_LISTENERS=PLAINTEXT:kafka2//:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9093,EXTERNAL://:29093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka2:9093,EXTERNAL://localhost:29093
+    networks:
+      - kafka-net
+
+
+  zookeeper-ui:
+    image: elkozmon/zoonavigator:latest
+    restart: always
+    ports:
+      - '4001:4000'
+    environment:
+      - HTTP_PORT=4000
+    networks:
+      - kafka-net
+ 
+  manager:
+    image: sheepkiller/kafka-manager
+    ports:
+      - "9000:9000"
+    environment:
+      - ZK_HOSTS=zookeeper:2181
+    networks:
+      - kafka-net

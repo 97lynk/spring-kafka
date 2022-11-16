@@ -1,0 +1,18 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092,localhost:29093
+    properties:
+      reconnect.backoff.ms: 10000
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: '*'
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: '*'
+        spring.json.value.default.type: java.lang.String
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
