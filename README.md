@@ -20,13 +20,18 @@ docker-compose up -d
 ```
 
 ## Create a topic
-Browse to `http://localhost:9000
+Browse to `http://localhost:9000`
 
 Add a cluster
-![img.png](img.png)`
+
+![img.png](img.png)
+
 
 Create `chat` topic
+
 ![img_1.png](img_1.png)
+
+
 
 ## Start Spring boot Application
 
